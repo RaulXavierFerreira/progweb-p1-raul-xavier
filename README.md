@@ -11,7 +11,8 @@ O domínio do projeto será definido na Semana 2.
 
 ## Estrutura
 
-- `s1/` - exercícios da Semana 1: os quatro pilares da POO em JavaScript.
+- `s1/` - Exercícios da Semana 1: os quatro pilares da POO em JavaScript.
+- `s2/` - Exercícios da semana 2: Mãos à Obra — Caça aos smells e modelagem do Projeto 1 
 '''
 
 '''markdown
