@@ -18,5 +18,5 @@ O domínio do projeto será definido na Semana 2.
 ## Sobre
 
 Aplicação fullstack (API Express em camadas + SQLite + frontend Bootstrap com Vanilla JS).
-**Domínio:** controle de empréstimos de uma biblioteca. A modelagem está em [MODELAGEM.md](MODELAGEM.md).
+**Domínio:** Academia (gerenciamento de alunos, planos/matrículas e treinos ou acessos). A modelagem está em [MODELAGEM.md](MODELAGEM.md).
 '''
