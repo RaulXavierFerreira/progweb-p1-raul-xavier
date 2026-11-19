@@ -2,12 +2,18 @@ import express from 'express';
 import clientesRouter from './routes/clientes.js';
 import { logger } from './middleware/logger.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import cors from 'cors';                      // ← novo
+// ...demais imports iguais
 
 const app = express();
 
 // --- Middleware global (antes das rotas) ---
-app.use(express.json()); // lê o body JSON para req.body
-app.use(logger);         // loga toda requisição
+app.use(cors({                                // ← novo
+  origin: ['http://localhost:5500', 'http://127.0.0.1:5500'],
+}));
+app.use(express.json());
+app.use(logger);
+// ...o resto do arquivo não muda
 
 // --- Health check ---
 app.get('/', (req, res) => {
