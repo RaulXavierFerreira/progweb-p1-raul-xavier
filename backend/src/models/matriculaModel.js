@@ -1,58 +1,41 @@
-import { db } from '../db.js';
-
-const COLUNAS = `
-  id,
-  aluno_id AS alunoId,
-  plano,
-  valor,
-  status,
-  criada_em AS criadaEm
-`;
+let matriculas = [];
+let proximoId = 1;
 
 export const matriculaModel = {
   listar() {
-    return db.prepare(`SELECT ${COLUNAS} FROM matriculas ORDER BY id`).all();
+    return matriculas;
   },
 
   buscarPorId(id) {
-    return db
-      .prepare(`SELECT ${COLUNAS} FROM matriculas WHERE id = ?`)
-      .get(id) ?? null;
+    return matriculas.find((m) => m.id === id) ?? null;
   },
 
   listarPorAlunoId(alunoId) {
-    return db
-      .prepare(`SELECT ${COLUNAS} FROM matriculas WHERE aluno_id = ? ORDER BY id`)
-      .all(alunoId);
+    return matriculas.filter((m) => m.alunoId === alunoId);
   },
 
-  inserir({ alunoId, plano, valor, status = 'ATIVA', criadaEm }) {
-    const insere = db
-      .prepare(`INSERT INTO matriculas (aluno_id, plano, valor, status, criada_em)
-                VALUES (?, ?, ?, ?, ?)`)
-      .run(
-        Number(alunoId),
-        plano,
-        Number(valor),
-        status,
-        criadaEm ?? new Date().toISOString(),
-      );
-    return this.buscarPorId(insere.lastInsertRowid);
+  inserir({ alunoId, plano, valor, status }) {
+    const nova = {
+      id: proximoId++,
+      alunoId,
+      plano,
+      valor,
+      status: status ?? 'ATIVA',
+    };
+    matriculas.push(nova);
+    return nova;
   },
 
   atualizar(id, dados) {
-    const atual = this.buscarPorId(id);
-    if (!atual) return null;
-    const novo = { ...atual, ...dados };
-    db.prepare(`UPDATE matriculas
-                SET aluno_id = ?, plano = ?, valor = ?, status = ?
-                WHERE id = ?`)
-      .run(Number(novo.alunoId), novo.plano, Number(novo.valor), novo.status, id);
-    return this.buscarPorId(id);
+    const i = matriculas.findIndex((m) => m.id === id);
+    if (i === -1) return null;
+    matriculas[i] = { ...matriculas[i], ...dados, id }; // o id nunca muda
+    return matriculas[i];
   },
 
   remover(id) {
-    const remove = db.prepare('DELETE FROM matriculas WHERE id = ?').run(id);
-    return remove.changes > 0;
+    const antes = matriculas.length;
+    matriculas = matriculas.filter((m) => m.id !== id);
+    return matriculas.length < antes; // true = removeu
   },
 };

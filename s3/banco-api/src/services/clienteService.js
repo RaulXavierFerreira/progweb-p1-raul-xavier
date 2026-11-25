@@ -1,5 +1,4 @@
 import { clienteModel } from '../models/clienteModel.js';
-import { contaModel } from '../models/contaModel.js';
 import { erro } from '../utils/erro.js';
 
 export const clienteService = {
@@ -23,21 +22,11 @@ export const clienteService = {
 
   atualizar(id, dados = {}) {
     const atualizado = clienteModel.atualizar(id, dados);
-    if (!atualizado) throw erro(409, 'Cliente não encontrado');
-    if(dados.cpf && clienteModel.existeCpf(dados.cpf, Number(id))){
-      const erro = new Error('Já existe outro cliente cadastrado com esse CPF.')
-      erro.status = 409;
-      throw erro;
-    }
-    
+    if (!atualizado) throw erro(404, 'Cliente não encontrado');
     return atualizado;
   },
 
   remover(id) {
-    // Regra nova (S5): cliente com contas não pode ser removido
-    if (contaModel.listarPorCliente(id).length > 0) {
-      throw erro(409, 'Cliente possui contas. Remova as contas primeiro.');
-    }
     const removido = clienteModel.remover(id);
     if (!removido) throw erro(404, 'Cliente não encontrado');
   },

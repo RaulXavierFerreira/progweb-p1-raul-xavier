@@ -1,46 +1,41 @@
-import { db } from '../db.js';
-
-// No banco: snake_case (cliente_id). No JSON da API: camelCase (clienteId).
-// O AS traduz aqui, na única camada que conhece o banco.
-const COLUNAS = `id, tipo, saldo,
-  cliente_id AS clienteId, criada_em AS criadaEm`;
+let contas = [];
+let proximoId = 1;
 
 export const contaModel = {
   listar() {
-    return db.prepare(`SELECT ${COLUNAS} FROM contas ORDER BY id`).all();
+    return contas;
   },
 
   listarPorCliente(clienteId) {
-    return db
-      .prepare(`SELECT ${COLUNAS} FROM contas WHERE cliente_id = ? ORDER BY id`)
-      .all(clienteId);
+    return contas.filter((c) => c.clienteId === clienteId);
   },
 
   buscarPorId(id) {
-    return db
-      .prepare(`SELECT ${COLUNAS} FROM contas WHERE id = ?`)
-      .get(id) ?? null;
+    return contas.find((c) => c.id === id) ?? null;
   },
 
   inserir({ tipo, saldo, clienteId }) {
-    const r = db
-      .prepare(`INSERT INTO contas (tipo, saldo, cliente_id, criada_em)
-                VALUES (?, ?, ?, ?)`)
-      .run(tipo, Number(saldo), Number(clienteId), new Date().toISOString());
-    return this.buscarPorId(r.lastInsertRowid);
+    const nova = {
+      id: proximoId++,
+      tipo,
+      saldo: Number(saldo),
+      clienteId: Number(clienteId),
+      criadaEm: new Date().toISOString(),
+    };
+    contas.push(nova);
+    return nova;
   },
 
   atualizar(id, dados) {
-    const atual = this.buscarPorId(id);
-    if (!atual) return null;
-    const novo = { ...atual, ...dados };
-    db.prepare('UPDATE contas SET tipo = ?, saldo = ?, cliente_id = ? WHERE id = ?')
-      .run(novo.tipo, Number(novo.saldo), Number(novo.clienteId), id);
-    return this.buscarPorId(id);
+    const i = contas.findIndex((c) => c.id === id);
+    if (i === -1) return null;
+    contas[i] = { ...contas[i], ...dados, id };
+    return contas[i];
   },
 
   remover(id) {
-    const r = db.prepare('DELETE FROM contas WHERE id = ?').run(id);
-    return r.changes > 0;
+    const antes = contas.length;
+    contas = contas.filter((c) => c.id !== id);
+    return contas.length < antes;
   },
 };
