@@ -1,48 +1,37 @@
-import { db } from '../db.js';
+// "Banco de dados" em memória: um array. Na S5 vira SQLite.
 
-// Mesmo contrato da S3 (listar, buscarPorId, existeCpf, inserir,
-// atualizar, remover). Só o "como" mudou: o array virou tabela.
+let clientes = [];
+let proximoId = 1;
+
 export const clienteModel = {
   listar() {
-    return db.prepare('SELECT * FROM clientes ORDER BY id').all();
+    return clientes;
   },
 
   buscarPorId(id) {
-    return db.prepare('SELECT * FROM clientes WHERE id = ?').get(id) ?? null;
+    return clientes.find((c) => c.id === id) ?? null;
   },
 
-  existeCpf(cpf, ignorarId = null) {
-    if(ignorarId != null){
-      const linha = db
-        .prepare('SELECT 1 FROM clientes WHERE cpf = ? AND id != ?')
-        .get(cpf, ignorarId)
-      return linha !== undefined
-    }
-
-    const linha = db
-      .prepare('SELECT 1 FROM clientes WHERE cpf = ?')
-      .get(cpf);
-    return linha !== undefined;
+  existeCpf(cpf) {
+    return clientes.some((c) => c.cpf === cpf);
   },
 
   inserir({ nome, cpf, email }) {
-    const r = db
-      .prepare('INSERT INTO clientes (nome, cpf, email) VALUES (?, ?, ?)')
-      .run(nome, cpf, email ?? null);
-    return this.buscarPorId(r.lastInsertRowid);
+    const novo = { id: proximoId++, nome, cpf, email: email ?? null };
+    clientes.push(novo);
+    return novo;
   },
 
   atualizar(id, dados) {
-    const atual = this.buscarPorId(id);
-    if (!atual) return null;
-    const novo = { ...atual, ...dados };
-    db.prepare('UPDATE clientes SET nome = ?, cpf = ?, email = ? WHERE id = ?')
-      .run(novo.nome, novo.cpf, novo.email ?? null, id); // o id nunca muda
-    return this.buscarPorId(id);
+    const i = clientes.findIndex((c) => c.id === id);
+    if (i === -1) return null;
+    clientes[i] = { ...clientes[i], ...dados, id }; // o id nunca muda
+    return clientes[i];
   },
 
   remover(id) {
-    const r = db.prepare('DELETE FROM clientes WHERE id = ?').run(id);
-    return r.changes > 0; // true = removeu
+    const antes = clientes.length;
+    clientes = clientes.filter((c) => c.id !== id);
+    return clientes.length < antes; // true = removeu
   },
 };
