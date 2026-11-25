@@ -1,7 +1,11 @@
 import express from 'express';
 import clientesRouter from './routes/clientes.js';
+import contaRouter from './routes/contas.js';
 import { logger } from './middleware/logger.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import cors from 'cors';                      // ← novo
+import { contaService } from './services/contaService.js';
+// ...demais imports iguais
 
 const app = express();
 
@@ -16,6 +20,7 @@ app.get('/', (req, res) => {
 
 // --- Rotas ---
 app.use('/clientes', clientesRouter);
+app.use('/contas', contaRouter)
 
 // --- 404 para rotas que não existem ---
 app.use((req, res) => {
