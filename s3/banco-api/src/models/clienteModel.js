@@ -11,8 +11,17 @@ export const clienteModel = {
     return db.prepare('SELECT * FROM clientes WHERE id = ?').get(id) ?? null;
   },
 
-  existeCpf(cpf) {
-    const linha = db.prepare('SELECT 1 FROM clientes WHERE cpf = ?').get(cpf);
+  existeCpf(cpf, ignorarId = null) {
+    if(ignorarId != null){
+      const linha = db
+        .prepare('SELECT 1 FROM clientes WHERE cpf = ? AND id != ?')
+        .get(cpf, ignorarId)
+      return linha !== undefined
+    }
+
+    const linha = db
+      .prepare('SELECT 1 FROM clientes WHERE cpf = ?')
+      .get(cpf);
     return linha !== undefined;
   },
 

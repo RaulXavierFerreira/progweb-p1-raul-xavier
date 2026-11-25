@@ -1,35 +1,45 @@
-let aluno = [];
-let proximoId = 1;
+import { db } from '../db.js';
 
 export const alunoModel = {
   listar() {
-    return aluno;
+    return db.prepare('SELECT * FROM alunos ORDER BY id').all();
   },
 
   buscarPorId(id) {
-    return aluno.find((c) => c.id === id) ?? null;
+    return db.prepare('SELECT * FROM alunos WHERE id = ?').get(id) ?? null;
   },
 
-  existeCpf(cpf) {
-    return aluno.some((c) => c.cpf === cpf);
+  existeCpf(cpf, ignorarId = null) {
+    if(ignorarId != null){
+      const linha = db
+        .prepare('SELECT 1 FROM alunos WHERE cpf = ? AND id != ?')
+        .get(cpf, ignorarId)
+      return linha !== undefined
+    }
+    const linha = db
+          .prepare('SELECT 1 FROM alunos WHERE cpf = ?')
+          .get(cpf);
+        return linha !== undefined;
   },
 
   inserir({ nome, cpf, email }) {
-    const novo = { id: proximoId++, nome, cpf, email: email ?? null };
-    aluno.push(novo);
-    return novo;
+    const insere = db
+          .prepare('INSERT INTO alunos (nome, cpf, email) VALUES (?, ?, ?)')
+          .run(nome, cpf, email ?? null);
+        return this.buscarPorId(insere.lastInsertRowid);
   },
 
   atualizar(id, dados) {
-    const i = aluno.findIndex((c) => c.id === id);
-    if (i === -1) return null;
-    aluno[i] = { ...aluno[i], ...dados, id }; // o id nunca muda
-    return aluno[i];
+    const atual = this.buscarPorId(id);
+    if (!atual) return null;
+    const novo = { ...atual, ...dados };
+    db.prepare('UPDATE alunos SET nome = ?, cpf = ?, email = ? WHERE id = ?')
+      .run(novo.nome, novo.cpf, novo.email ?? null, id); // o id nunca muda
+    return this.buscarPorId(id);
   },
 
   remover(id) {
-    const antes = aluno.length;
-    aluno = aluno.filter((c) => c.id !== id);
-    return aluno.length < antes; // true = removeu
+    const remove = db.prepare('DELETE FROM alunos WHERE id = ?').run(id);
+    return remove.changes > 0; // true = removeu
   },
 };

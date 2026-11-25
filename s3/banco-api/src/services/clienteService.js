@@ -23,7 +23,13 @@ export const clienteService = {
 
   atualizar(id, dados = {}) {
     const atualizado = clienteModel.atualizar(id, dados);
-    if (!atualizado) throw erro(404, 'Cliente não encontrado');
+    if (!atualizado) throw erro(409, 'Cliente não encontrado');
+    if(dados.cpf && clienteModel.existeCpf(dados.cpf, Number(id))){
+      const erro = new Error('Já existe outro cliente cadastrado com esse CPF.')
+      erro.status = 409;
+      throw erro;
+    }
+    
     return atualizado;
   },
 
