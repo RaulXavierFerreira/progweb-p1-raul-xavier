@@ -1,24 +1,74 @@
-'''markdown
-#Projeto 1 - programação Web (UEPB . 2026.2)
+# Nome do seu sistema
 
-**Aluno (a):** Raul Xavier Ferreira
-**Disciplina:** Programação Web . Prof. Rodrigo Alves Costa
+Uma ou duas frases: o que o sistema faz e para quem.
+Projeto 1 da disciplina Programação Web (UEPB, 2026.2).
 
-## Sobre
+- **Aplicação:** https://SEU-FRONT.vercel.app
+- **API:** https://SEU-SERVICO.onrender.com
+- **Vídeo de apresentação:** (link)
 
-Aplicação fullstack (API Express em camadas + SQLite + frontend Booststrap com Vanilla JS).
-O domínio do projeto será definido na Semana 2.
+> A API está no plano grátis do Render: o primeiro acesso pode levar cerca de
+> um minuto, e os dados voltam aos de exemplo a cada reinício do serviço.
+
+## Tecnologias
+
+- Backend: Node.js 22, Express 5, SQLite (`node:sqlite`, SQL puro)
+- Frontend: HTML, CSS, Bootstrap 5, JavaScript puro (ES Modules, `fetch`)
+
+## Como rodar localmente
+
+Pré-requisito: Node.js 22 ou superior.
+
+```bash
+# 1. API
+cd backend
+npm install
+cp .env.example .env
+npm run dev                      # http://localhost:3000
+
+# 2. Frontend (em outro terminal)
+cd frontend
+npx http-server -p 5500 -c-1     # http://localhost:5500
+```
+
+## Rotas da API
+
+| Método | Rota | O que faz | Respostas |
+|---|---|---|---|
+| GET | /categorias | Lista as categorias | 200 |
+| POST | /categorias | Cria uma categoria | 201, 400, 409 |
+| GET | /categorias/:id | Busca uma categoria | 200, 404 |
+| PUT | /categorias/:id | Atualiza uma categoria | 200, 404 |
+| DELETE | /categorias/:id | Remove uma categoria | 204, 404, 409 |
+| ... | ... | ... | ... |
+
+Erros seguem o formato `{ "erro": "mensagem" }`.
+
+## Regras de negócio
+
+- (uma linha por regra: o que é validado e qual status devolve)
 
 ## Estrutura
 
-- `s1/` - Exercícios da Semana 1: os quatro pilares da POO em JavaScript.
-- `s2/` - Exercícios da semana 2: Mãos à Obra — Caça aos smells e modelagem do Projeto 1 
-- `s3/` - Exercícios da semana 3: 🛠️ S3 · Mãos à Obra — Primeira API em camadas (Express 5)
-'''
+```
+backend/
+  src/
+    routes/        mapeia URL → controller
+    controllers/   lê a requisição, chama o service, responde
+    services/      regras de negócio
+    models/        acesso ao banco (SQL)
+    middleware/    logger e tratamento de erros
+    db.js          conexão e schema do SQLite
+frontend/
+  js/
+    api.js         camada HTTP (fetch)
+    services/      regras da tela
+    state/         estado da aplicação
+    ui/            desenho da tela
+MODELAGEM.md       modelagem de classes (S2)
+s1/ … s4/          exercícios das semanas
+```
 
-'''markdown
-## Sobre
+## Autor
 
-Aplicação fullstack (API Express em camadas + SQLite + frontend Bootstrap com Vanilla JS).
-**Domínio:** Academia (gerenciamento de alunos, planos/matrículas e treinos ou acessos). A modelagem está em [MODELAGEM.md](MODELAGEM.md).
-'''
+Seu nome · Ciência da Computação · UEPB
