@@ -1,4 +1,5 @@
 import { alunoModel } from '../models/alunoModel.js';
+import { matriculaModel } from '../models/matriculaModel.js';
 import { erro } from '../utils/erro.js';
 
 export const alunoService = {
@@ -27,6 +28,9 @@ export const alunoService = {
   },
 
   remover(id) {
+    if(matriculaModel.listarPorAlunoId(id).length > 0){
+      throw erro(409, 'Aluno possui matrícula. Remova a matrícula primeiro.');
+    }
     const removido = alunoModel.remover(id);
     if (!removido) throw erro(404, 'Aluno não encontrado');
   },
