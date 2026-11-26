@@ -25,3 +25,27 @@ db.exec(`
     criada_em  TEXT NOT NULL
   );
 `);
+
+// Dados de exemplo: só entram se o banco estiver vazio.
+// No Render grátis o arquivo some a cada reinício; assim a demo nunca abre vazia.
+
+const { total } = db.prepare('SELECT COUNT(*) AS total FROM clientes').get();
+if (total === 0) {
+  const insereClientes = db.prepare(
+    'INSERT INTO clientes (nome, cpf, email) VALUES (?, ?, ?)'
+  );
+  const insereContas = db.prepare(
+    'INSERT INTO contas (tipo, saldo, cliente_id, criada_em) VALUES (?, ?, ?, ?)'
+  );
+
+  const agora = new Date().toISOString();
+
+  const ana = insereClientes.run('Ana Silva', '11122233344', 'ana@exemplo.com');
+  insereContas.run('corrente', 1500, ana.lastInsertRowid, agora);
+
+  const bruno = insereClientes.run('Bruno Costa', '22233344455', 'bruno@exemplo.com');
+  insereContas.run('corrente', 3000, bruno.lastInsertRowid, agora);
+
+  const carla = insereClientes.run('Carla Souza', '33344455566', 'carla@exemplo.com');
+  insereContas.run('poupanca', 20000, carla.lastInsertRowid, agora);
+}
