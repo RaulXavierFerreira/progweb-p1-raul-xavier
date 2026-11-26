@@ -3,8 +3,8 @@
 Uma ou duas frases: o que o sistema faz e para quem.
 Projeto 1 da disciplina Programação Web (UEPB, 2026.2).
 
-- **Aplicação:** https://SEU-FRONT.vercel.app
-- **API:** https://SEU-SERVICO.onrender.com
+- **Aplicação:** [https://progweb-p1-raul-xavier-frontend.vercel.app]
+- **API:** [https://progweb-p1-raul-xavier.onrender.com]
 - **Vídeo de apresentação:** (link)
 
 > A API está no plano grátis do Render: o primeiro acesso pode levar cerca de
@@ -71,4 +71,4 @@ s1/ … s4/          exercícios das semanas
 
 ## Autor
 
-Seu nome · Ciência da Computação · UEPB
+Raul Xavier Ferreira · Ciência da Computação · UEPB
